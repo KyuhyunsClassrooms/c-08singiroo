@@ -7,6 +7,8 @@ int Map_X_MAX = 200;
 int Map_Y_MAX = 75;
 int key; int gamestatus = 0; int mapdata[1500];
 int beginpattern;
+int chrx = Map_X_MAX / 2;
+int chry = 50;
 
 void SetConsole();
 void gotoxy(int x, int y);
@@ -19,43 +21,50 @@ void sans();
 void type_effect(const char *str, int delay_ms);
 void begin();
 void pattern_begin();
+void control();
+void display();
+void setvalue();
+
+
+
+typedef struct character {
+    int x, y, size_x, size_y;
+    char sprite[6];
+}chr;
 
 int main(void) 
 {	
-	int x = Map_X_MAX / 2;
-	int y = 50;
-	SetConsole();	
+	SetConsole();
+	setvalue();	
 	gamestart();
 	
-	while (gamestatus) {
-        gotoxy(x, y); // 화면 초기화 지점
-        system("cls");
-        gotoxy(x, y);
-        printf("*");
-        if (GetAsyncKeyState(VK_UP) & 0x8000) 
-		{
-			if (y > 0)
-			y--;
-		}
-		if (GetAsyncKeyState(VK_DOWN) & 0x8000) 
-		{
-			if (y < Map_Y_MAX - 1)
-		        y++;
-		}
-		if (GetAsyncKeyState(VK_LEFT) & 0x8000) 
-		{
-		    if (x > 0)
-				x -= 1;
-		}
-		if (GetAsyncKeyState(VK_RIGHT) & 0x8000) 
-		{
-			if (x < Map_X_MAX - 2)
-				x += 1;
-		}
-
+	while (gamestatus) 
+	{
+		mapdata[(chry - 1) * Map_X_MAX + chrx - 1] = ' ';
+		if(GetAsyncKeyState(0x41) != 0 && chrx > 1)
+            chrx -= 1;
+            
+        if(GetAsyncKeyState(0x44) != 0 && chrx < Map_X_MAX)
+            chrx += 1;
+            
+        if(GetAsyncKeyState(0x57) != 0 && chry > 1)
+            chry -= 1;
+            
+        if(GetAsyncKeyState(0x53) != 0 && chry < Map_Y_MAX)
+            chry += 1;
+        mapdata[(chry - 1) * Map_X_MAX + chrx - 1] = '*';
+        printf("%s", mapdata);
         Sleep(20);
 		}
 	return 0;
+}
+
+void setvalue() 
+{    
+    for (int i = 0; i < Map_X_MAX * Map_Y_MAX; i++)
+    {
+    	mapdata[i] = ' ';
+	}
 }
 
 void SetConsole() {
